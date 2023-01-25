@@ -231,6 +231,11 @@
 	est_thrust = calculated_thrust
 
 /**
+  * Calculates the shield status
+  */
+/obj/structure/overmap/ship/simulated/refresh_shields()
+tgui
+/**
   * Calculates the mass based on the amount of turfs in the shuttle's areas
   */
 /obj/structure/overmap/ship/simulated/proc/calculate_mass()
