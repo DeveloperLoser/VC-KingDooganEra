@@ -9,9 +9,9 @@
 	var/ship_id
 	///The currently selected overmap object destination of the attached shuttle
 	var/obj/structure/overmap/destination
-	var/obj/structure/overmap/ship/simulated/subvert_target
+	var/datum/overmap/ship/controlled/subvert_target
 	///The linked overmap shuttle
-	var/obj/structure/overmap/ship/simulated/ship
+	var/datum/overmap/ship/controlled/ship
 	var/list/list/tgui_view_state = list()
 	var/obj/machinery/subverter/sub
 
@@ -139,7 +139,7 @@
 		if(OVERMAP_SHIP_DOCKING)
 			data["locked_b"] = TRUE
 
-	for(var/obj/structure/overmap/ship/simulated/flying_ship in view(ship.sensor_range, get_turf(ship)))
+	for(var/datum/overmap/ship/controlled/flying_ship in view(ship.sensor_range, get_turf(ship)))
 		if(flying_ship == ship)
 			continue
 		var/list/location_data = list(
@@ -180,7 +180,7 @@
 				destination = target_destination
 				return TRUE
 		if("subvert")
-			var/obj/structure/overmap/ship/simulated/target_ship = locate(params["shuttle_id"])
+			var/datum/overmap/ship/controlled/target_ship = locate(params["shuttle_id"])
 			if (sub.attempt_to_subvert(target_ship))
 				return TRUE
 		if("set_subvert_target")

@@ -5,7 +5,7 @@
 	icon_state = "safe"
 	anchored = TRUE
 	var/unlocked = FALSE
-	var/obj/structure/overmap/ship/simulated/linked_ship
+	var/datum/overmap/ship/controlled/linked_ship
 
 /obj/item/storage/overmap_emergency_safe/connect_to_shuttle(obj/docking_port/mobile/port, obj/docking_port/stationary/dock)
 	linked_ship = port?.current_ship

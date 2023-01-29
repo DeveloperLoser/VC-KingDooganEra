@@ -27,7 +27,7 @@ GLOBAL_LIST_EMPTY(custom_shuttle_machines)		//Machines that require updating (He
 	var/recorded_shuttle_area
 	var/list/loggedTurfs = list()
 	var/loggedOldArea
-	var/obj/structure/overmap/ship/simulated/target_ship
+	var/datum/overmap/ship/controlled/target_ship
 
 /obj/item/shuttle_creator/attack_self(mob/user)
 	..()

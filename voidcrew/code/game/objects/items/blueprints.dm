@@ -12,7 +12,7 @@
 	if(istype(target, /obj/machinery/computer/helm))
 		var/obj/machinery/computer/helm/H = target
 		if(istype(H.current_ship, /obj/structure/overmap/ship/simulated))
-			var/obj/structure/overmap/ship/simulated/S = H.current_ship
+			var/datum/overmap/ship/controlled/S = H.current_ship
 			target_shuttle = S.shuttle
 
 /obj/item/areaeditor/shuttle/attack_self(mob/user)

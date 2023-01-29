@@ -55,7 +55,7 @@
 	/// Which docking port the ship is occupying
 	var/dock_index
 
-/obj/structure/overmap/ship/simulated/Initialize(mapload, obj/docking_port/mobile/_shuttle, datum/map_template/shuttle/_source_template)
+/datum/overmap/ship/controlled/Initialize(mapload, obj/docking_port/mobile/_shuttle, datum/map_template/shuttle/_source_template)
 	. = ..()
 	SSovermap.simulated_ships += src
 	if(_shuttle)
@@ -76,11 +76,11 @@
 	refresh_engines()
 	check_loc()
 
-/obj/structure/overmap/ship/simulated/Destroy()
+/datum/overmap/ship/controlled/Destroy()
 	. = ..()
 	SSovermap.simulated_ships -= src
 
-/obj/structure/overmap/ship/simulated/attack_ghost(mob/user)
+/datum/overmap/ship/controlled/attack_ghost(mob/user)
 	if(shuttle)
 		user.forceMove(get_turf(shuttle))
 		return TRUE
@@ -88,7 +88,7 @@
 		return
 
 ///Destroy if integrity <= 0 and no concious mobs on shuttle
-/obj/structure/overmap/ship/simulated/recieve_damage(amount)
+/datum/overmap/ship/controlled/recieve_damage(amount)
 	. = ..()
 	update_icon_state()
 	if(integrity > 0)
@@ -112,7 +112,7 @@
 *	the bools need to be set to false.
 *	This function should be called whenever an action occurs that would remove a ship from the map
 */
-/obj/structure/overmap/ship/simulated/proc/update_docked_bools()
+/datum/overmap/ship/controlled/proc/update_docked_bools()
 	var/obj/structure/overmap/dynamic/dockable_place = docked
 	if (!dockable_place)
 		return
@@ -123,7 +123,7 @@
 		dockable_place.second_dock_taken = FALSE
 		dock_index = 0
 
-/obj/structure/overmap/ship/simulated/proc/destroy_ship(force = FALSE)
+/datum/overmap/ship/controlled/proc/destroy_ship(force = FALSE)
 	if ((length(shuttle.get_all_humans()) > 0) && !force)
 		return
 	if ((is_active_crew() == SHUTTLE_ACTIVE_CREW) && !force)
@@ -139,7 +139,7 @@
   * * user - Mob that started the action
   * * object - Overmap object to act on
   */
-/obj/structure/overmap/ship/simulated/proc/overmap_object_act(mob/user, obj/structure/overmap/object, obj/structure/overmap/ship/simulated/optional_partner)
+/datum/overmap/ship/controlled/proc/overmap_object_act(mob/user, obj/structure/overmap/object, datum/overmap/ship/controlled/optional_partner)
 	if(!is_still() || state != OVERMAP_SHIP_FLYING)
 		to_chat(user, "<span class='warning'>Ship must be still to interact!</span>")
 		return
@@ -151,7 +151,7 @@
   * * to_dock - The [/obj/structure/overmap] to dock to.
   * * dock_to_use - The [/obj/docking_port/mobile] to dock to.
   */
-/obj/structure/overmap/ship/simulated/proc/dock(obj/structure/overmap/to_dock, obj/docking_port/stationary/dock_to_use)
+/datum/overmap/ship/controlled/proc/dock(obj/structure/overmap/to_dock, obj/docking_port/stationary/dock_to_use)
 	refresh_engines()
 	// Voidcrew Edit: removes throw equation "THROW" = FLOOR(est_thrust / 200, 1)
 	shuttle.movement_force = list("KNOCKDOWN" = FLOOR(est_thrust / 50, 1), "THROW" = 0)
@@ -166,7 +166,7 @@
 /**
   * Undocks the shuttle by launching the shuttle with no destination (this causes it to remain in transit)
   */
-/obj/structure/overmap/ship/simulated/proc/undock()
+/datum/overmap/ship/controlled/proc/undock()
 	if(!is_still()) //how the hell is it even moving (is the question I've asked multiple times) //fuck you past me this didn't help at all
 		decelerate(max_speed)
 	if(isturf(loc))
@@ -188,7 +188,7 @@
   * Docks to an empty dynamic encounter. Used for intership interaction, structural modifications, and such
   * * user - The user that initiated the action
   */
-/obj/structure/overmap/ship/simulated/proc/dock_in_empty_space(mob/user)
+/datum/overmap/ship/controlled/proc/dock_in_empty_space(mob/user)
 	var/obj/structure/overmap/dynamic/empty/E
 	E = locate() in get_turf(src)
 	if(!E)
@@ -196,7 +196,7 @@
 	if(E)
 		return overmap_object_act(user, E)
 
-/obj/structure/overmap/ship/simulated/burn_engines(n_dir = null, percentage = 100)
+/datum/overmap/ship/controlled/burn_engines(n_dir = null, percentage = 100)
 	if(state != OVERMAP_SHIP_FLYING)
 		return
 
@@ -219,7 +219,7 @@
 /**
   * Just double checks all the engines on the shuttle
   */
-/obj/structure/overmap/ship/simulated/proc/refresh_engines()
+/datum/overmap/ship/controlled/proc/refresh_engines()
 	var/calculated_thrust
 	for(var/obj/machinery/power/shuttle/engine/E in shuttle.engine_list)
 		if (QDELETED(E)) //Garant that we has no ghost engines.
@@ -233,7 +233,7 @@
 /**
   * Calculates the mass based on the amount of turfs in the shuttle's areas
   */
-/obj/structure/overmap/ship/simulated/proc/calculate_mass()
+/datum/overmap/ship/controlled/proc/calculate_mass()
 	. = 0
 	var/list/areas = shuttle.shuttle_areas
 	for(var/shuttleArea in areas)
@@ -244,7 +244,7 @@
 /**
   * Calculates the average fuel fullness of all engines.
   */
-/obj/structure/overmap/ship/simulated/proc/calculate_avg_fuel()
+/datum/overmap/ship/controlled/proc/calculate_avg_fuel()
 	var/fuel_avg = 0
 	var/engine_amnt = 0
 	for(var/obj/machinery/power/shuttle/engine/E in shuttle.engine_list)
@@ -260,7 +260,7 @@
 /**
   * Proc called after a shuttle is moved, used for checking a ship's location when it's moved manually (E.G. calling the mining shuttle via a console)
   */
-/obj/structure/overmap/ship/simulated/proc/check_loc()
+/datum/overmap/ship/controlled/proc/check_loc()
 	var/docked_object = shuttle.current_ship
 	if(docked_object == loc) //The docked object is correct, move along
 		return TRUE
@@ -281,7 +281,7 @@
 		return FALSE
 	return TRUE
 
-/obj/structure/overmap/ship/simulated/tick_move()
+/datum/overmap/ship/controlled/tick_move()
 	if(!isturf(loc))
 		decelerate(max_speed)
 		deltimer(movement_callback_id)
@@ -291,7 +291,7 @@
 		decelerate(max_speed / 100)
 	..()
 
-/obj/structure/overmap/ship/simulated/tick_autopilot()
+/datum/overmap/ship/controlled/tick_autopilot()
 	if(!isturf(loc))
 		return
 	. = ..()
@@ -303,7 +303,7 @@
 /**
   * Called after the shuttle docks, and finishes the transfer to the new location.
   */
-/obj/structure/overmap/ship/simulated/proc/complete_dock(datum/weakref/to_dock)
+/datum/overmap/ship/controlled/proc/complete_dock(datum/weakref/to_dock)
 	var/old_loc = loc
 	switch(state)
 		if(OVERMAP_SHIP_DOCKING) //so that the shuttle is truly docked first
@@ -315,7 +315,7 @@
 					return
 
 				if(istype(docking_target, /obj/structure/overmap/ship/simulated)) //hardcoded and bad
-					var/obj/structure/overmap/ship/simulated/S = docking_target
+					var/datum/overmap/ship/controlled/S = docking_target
 					S.shuttle.shuttle_areas |= shuttle.shuttle_areas
 				forceMove(docking_target)
 				state = OVERMAP_SHIP_IDLE
@@ -324,7 +324,7 @@
 		if(OVERMAP_SHIP_UNDOCKING)
 			if(!isturf(loc))
 				if(istype(loc, /obj/structure/overmap/ship/simulated)) //Even more hardcoded, even more bad
-					var/obj/structure/overmap/ship/simulated/S = loc
+					var/datum/overmap/ship/controlled/S = loc
 					S.shuttle.shuttle_areas -= shuttle.shuttle_areas
 					adjust_speed(S.speed[1], S.speed[2])
 				forceMove(get_turf(loc))
@@ -337,7 +337,7 @@
 				addtimer(CALLBACK(src, /obj/structure/overmap/ship/.proc/tick_autopilot), 5 SECONDS) //TODO: Improve this SOMEHOW
 	update_screen()
 
-/obj/structure/overmap/ship/simulated/get_eta()
+/datum/overmap/ship/controlled/get_eta()
 	if(current_autopilot_target && !is_still())
 		. += shuttle.callTime
 	return ..()
@@ -345,7 +345,7 @@
 /**
   * Handles repairs. Called by a repeating timer that is created when the ship docks.
   */
-/obj/structure/overmap/ship/simulated/proc/repair()
+/datum/overmap/ship/controlled/proc/repair()
 	if(isturf(loc))
 		deltimer(repair_timer)
 		return
@@ -355,7 +355,7 @@
 /**
   * Sets the ship, shuttle, and shuttle areas to a new name.
   */
-/obj/structure/overmap/ship/simulated/proc/set_ship_name(new_name, ignore_cooldown = FALSE, bypass_same_name = FALSE)
+/datum/overmap/ship/controlled/proc/set_ship_name(new_name, ignore_cooldown = FALSE, bypass_same_name = FALSE)
 	if(bypass_same_name == FALSE)
 		if(!new_name || new_name == name)
 			return
@@ -376,7 +376,7 @@
 /**
   *Sets the ships faction and updates the crews huds
   */
-/obj/structure/overmap/ship/simulated/proc/set_ship_faction(faction_change)
+/datum/overmap/ship/controlled/proc/set_ship_faction(faction_change)
 	if(!COOLDOWN_FINISHED(src, faction_cooldown))
 		return
 	if(faction_change == faction_prefix || (faction_change == "return" && faction_prefix == "NEU"))
@@ -394,7 +394,7 @@
 /**
   * Updates the ships icon to make it easier to distinguish between factions
   */
-/obj/structure/overmap/ship/simulated/proc/update_ship_color()
+/datum/overmap/ship/controlled/proc/update_ship_color()
 	switch(faction_prefix)
 		if("SYN-C")
 			color = "#F10303"
@@ -409,14 +409,14 @@
 /**
   *The proc for actually updating the hud calls from faction_datum
   */
-/obj/structure/overmap/ship/simulated/proc/update_crew_hud()
+/datum/overmap/ship/controlled/proc/update_crew_hud()
 	for (var/datum/weakref/member in crewmembers)
 		if (isnull(member.resolve()))
 			continue
 		remove_faction_hud(FACTION_HUD_GENERAL, member.resolve())
 		add_faction_hud(FACTION_HUD_GENERAL, faction_prefix, member.resolve())
 
-/obj/structure/overmap/ship/simulated/update_icon_state()
+/datum/overmap/ship/controlled/update_icon_state()
 	if(mass < SHIP_SIZE_THRESHOLD)
 		base_icon_state = "shuttle"
 	else
@@ -426,7 +426,7 @@
 /**
  * Decides what to do when a crew member dies, as long as there are live (whilst not SSD) crewmembers nothing will happen
  */
-/obj/structure/overmap/ship/simulated/proc/handle_inactive_ship()
+/datum/overmap/ship/controlled/proc/handle_inactive_ship()
 	SIGNAL_HANDLER
 
 	if (!isnull(deletion_timer))
@@ -445,7 +445,7 @@
  * Arguments:
  * * ssd_check - Should we double check if theres a crewmember that is SSD
  */
-/obj/structure/overmap/ship/simulated/proc/finalize_inactive_ship(ssd_check = FALSE)
+/datum/overmap/ship/controlled/proc/finalize_inactive_ship(ssd_check = FALSE)
 	if (ssd_check && (is_active_crew() == SHUTTLE_ACTIVE_CREW))
 		return // ssd guy came back
 

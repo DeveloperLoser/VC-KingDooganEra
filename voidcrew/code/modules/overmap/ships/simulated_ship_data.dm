@@ -17,12 +17,12 @@
 	///List of weakrefs of all the crewmembers
 	var/list/crewmembers = list()
 
-/obj/structure/overmap/ship/simulated/Initialize(mapload, obj/docking_port/mobile/_shuttle, datum/map_template/shuttle/_source_template)
+/datum/overmap/ship/controlled/Initialize(mapload, obj/docking_port/mobile/_shuttle, datum/map_template/shuttle/_source_template)
 	. = ..()
 	job_slots = _source_template.job_slots.Copy()
 	ship_account = new(name, 7500)
 
-/obj/structure/overmap/ship/simulated/Destroy()
+/datum/overmap/ship/controlled/Destroy()
 	. = ..()
 	unregister_all_crewmembers()
 
@@ -32,7 +32,7 @@
  * Arguments:
  * * mob/living/carbon/human/crewmate - The mob to remove from the list of crewmembers
  */
-/obj/structure/overmap/ship/simulated/proc/unregister_crewmember(mob/living/carbon/human/crewmate)
+/datum/overmap/ship/controlled/proc/unregister_crewmember(mob/living/carbon/human/crewmate)
 	for (var/datum/weakref/member in crewmembers)
 		if (crewmate == member.resolve())
 			var/mob/living/carbon/human/ex_crewmate = member.resolve()
@@ -49,7 +49,7 @@
 /**
  * Unregister ALL crewmates from the ship
  */
-/obj/structure/overmap/ship/simulated/proc/unregister_all_crewmembers()
+/datum/overmap/ship/controlled/proc/unregister_all_crewmembers()
 	for (var/datum/weakref/member in crewmembers)
 		if (isnull(member.resolve()))
 			member = null
@@ -63,7 +63,7 @@
  * Arguments:
  * * mob/living/carbon/human/crewmate - The mob to add to the list of crewmembers
  */
-/obj/structure/overmap/ship/simulated/proc/register_crewmember(mob/living/carbon/human/crewmate)
+/datum/overmap/ship/controlled/proc/register_crewmember(mob/living/carbon/human/crewmate)
 	var/datum/weakref/new_cremate = WEAKREF(crewmate)
 	crewmembers.Add(new_cremate)
 	RegisterSignal(crewmate, COMSIG_MOB_DEATH, .proc/handle_inactive_ship)
@@ -79,7 +79,7 @@
  *
  * Takes all of the living humans on the ship and adds them as a crewmember
  */
-/obj/structure/overmap/ship/simulated/proc/register_all_crewmembers()
+/datum/overmap/ship/controlled/proc/register_all_crewmembers()
 	var/list/humans = shuttle.get_all_humans()
 	for (var/mob/living/carbon/human/human_to_add as anything in humans)
 		if(isnull(human_to_add.client))
@@ -92,7 +92,7 @@
   * Arguments:
   * mob/living/carbon/human/crewmate - The mob being checked for access
   */
-/obj/structure/overmap/ship/simulated/proc/is_player_in_crew(mob/living/carbon/human/crewmate)
+/datum/overmap/ship/controlled/proc/is_player_in_crew(mob/living/carbon/human/crewmate)
 	for (var/datum/weakref/member in crewmembers)
 		if (crewmate == member.resolve())
 			return TRUE
@@ -102,7 +102,7 @@
   * Bastardized version of GLOB.manifest.manifest_inject, but used per ship
   *
   */
-/obj/structure/overmap/ship/simulated/proc/manifest_inject(mob/living/carbon/human/H, client/C, datum/job/human_job)
+/datum/overmap/ship/controlled/proc/manifest_inject(mob/living/carbon/human/H, client/C, datum/job/human_job)
 	set waitfor = FALSE
 	if(H.mind && (H.mind.assigned_role != H.mind.special_role))
 		manifest[H.real_name] = human_job
@@ -111,7 +111,7 @@
 /**
  * Check the status of the crew
  */
-/obj/structure/overmap/ship/simulated/proc/is_active_crew()
+/datum/overmap/ship/controlled/proc/is_active_crew()
 	var/is_ssd = FALSE
 	for (var/datum/weakref/crewmember in crewmembers)
 		var/mob/living/carbon/human/member = crewmember.resolve()

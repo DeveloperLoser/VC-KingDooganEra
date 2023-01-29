@@ -27,7 +27,7 @@
 		qdel(reserve_dock_secondary, TRUE)
 		reserve_dock_secondary = null
 
-/obj/structure/overmap/dynamic/ship_act(mob/user, obj/structure/overmap/ship/simulated/acting, obj/structure/overmap/ship/simulated/optional_partner)
+/obj/structure/overmap/dynamic/ship_act(mob/user, datum/overmap/ship/controlled/acting, datum/overmap/ship/controlled/optional_partner)
 	if(concerned)
 		to_chat(user, "<span class='notice'>Too much traffic, try again later!</span>")
 		return

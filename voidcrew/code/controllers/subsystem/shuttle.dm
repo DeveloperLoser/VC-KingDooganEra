@@ -115,6 +115,7 @@
 		new_shuttle.jumpToNullSpace()
 		return
 	new_shuttle.initiate_docking(destination_port)
+	return new_shuttle
 
 /**
   * This proc replaces the given shuttle with a fresh new one spawned from a template.
@@ -126,7 +127,7 @@
   * * to_replace - The shuttle to replace. Should NOT be null.
   * * replacement - The shuttle map template to load in place of the old shuttle. Can NOT be null.
   **/
-/datum/controller/subsystem/shuttle/proc/replace_shuttle(obj/docking_port/mobile/to_replace, datum/overmap/ship/controlled/parent, datum/map_template/shuttle/replacement
+/datum/controller/subsystem/shuttle/proc/replace_shuttle(obj/docking_port/mobile/to_replace, datum/overmap/ship/controlled/parent, datum/map_template/shuttle/replacement)
 	if(!to_replace || !replacement)
 		return
 var/obj/docking_port/mobile/new_shuttle = load_template(replacement, parent, FALSE)
@@ -182,15 +183,14 @@ new_shuttle.current_ship.Rename(to_replace.name, TRUE)
 	for(var/T in affected)
 		for(var/obj/docking_port/P in T)
 			if(istype(P, /obj/docking_port/mobile))
-				found++
-				if(found > 1)
-					qdel(P, force=TRUE)
+			if(new_shuttle)
+					qdel(P, TRUE)
 					log_world("Map warning: Shuttle Template [template.mappath] has multiple mobile docking ports.")
 				else
 					new_shuttle = P
 			if(istype(P, /obj/docking_port/stationary))
-				log_world("Map warning: Shuttle Template [template.mappath] has a stationary docking port.")
-	if(!found)
+			stationary_ports += P
+	if(!new_shuttle)
 		var/msg = "load_template(): Shuttle Template [template.mappath] has no mobile docking port. Aborting import."
 		for(var/T in affected)
 			var/turf/T0 = T
@@ -199,6 +199,9 @@ new_shuttle.current_ship.Rename(to_replace.name, TRUE)
 		message_admins(msg)
 		WARNING(msg)
 		return
+if(!new_shuttle.can_move_docking_ports && length(stationary_ports))
+		log_world("Map warning: Shuttle Template [template.mappath] has [length(stationary_ports)] stationary docking port(s) and does not have var/can_move_docking_ports set to TRUE. Will not move these ports.")
+	new_shuttle.docking_points = stationary_ports
 
 	var/obj/docking_port/mobile/transit_dock = generate_transit_dock(new_shuttle)
 
@@ -212,7 +215,7 @@ new_shuttle.current_ship.Rename(to_replace.name, TRUE)
 		return
 
 	new_shuttle.initiate_docking(transit_dock)
-	new_shuttle.linkup(transit_dock)
+	new_shuttle.linkup(transit_dock, parent)
 	QDEL_NULL(loading_zone)
 
 	//Everything fine

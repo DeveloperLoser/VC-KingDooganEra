@@ -394,18 +394,11 @@ SUBSYSTEM_DEF(shuttle)
 	// Status panel
 	data["shuttles"] = list()
 	for(var/obj/docking_port/mobile/M as anything in mobile)
-		var/timeleft = M.timeLeft(1)
 		var/list/L = list()
 		L["name"] = M.name
 		L["id"] = REF(M)
 		L["timer"] = M.timer
-		L["timeleft"] = M.getTimerStr()
-		if (timeleft > 1 HOURS)
-			L["timeleft"] = "Infinity"
-		L["can_fast_travel"] = M.timer && timeleft >= 50
 		L["can_fly"] = TRUE
-		if(!M.destination)
-			L["can_fast_travel"] = FALSE
 		if (M.mode != SHUTTLE_IDLE)
 			L["mode"] = capitalize(M.mode)
 		L["status"] = M.getDbgStatusText()
@@ -430,12 +423,12 @@ SUBSYSTEM_DEF(shuttle)
 			if(S)
 				. = TRUE
 				// If successful, returns the mobile docking port
-				var/obj/docking_port/mobile/mdp = load_template(S)
-				if(mdp)
-					user.forceMove(get_turf(mdp))
-					message_admins("[key_name_admin(usr)] loaded [mdp] with the shuttle manipulator.")
-					log_admin("[key_name(usr)] loaded [mdp] with the shuttle manipulator.</span>")
-					SSblackbox.record_feedback("text", "shuttle_manipulator", 1, "[mdp.name]")
+			var/datum/overmap/ship/controlled/new_ship = new(null, S)
+			if(new_ship?.shuttle_port)
+				user.forceMove(new_ship.get_jump_to_turf())
+				message_admins("[key_name_admin(usr)] loaded [new_ship] ([S]) with the shuttle manipulator.")
+				log_admin("[key_name(usr)] loaded [new_ship] ([S]) with the shuttle manipulator.</span>")
+				SSblackbox.record_feedback("text", "shuttle_manipulator", 1, "[S]")
 
 		if("jump_to")
 			if(params["type"] == "mobile")
@@ -451,14 +444,4 @@ SUBSYSTEM_DEF(shuttle)
 				if(REF(M) == params["id"])
 					. = TRUE
 					M.admin_fly_shuttle(user)
-					break
-
-		if("fast_travel")
-			for(var/obj/docking_port/mobile/M as anything in mobile)
-				if(REF(M) == params["id"] && M.timer && M.timeLeft(1) >= 50)
-					M.setTimer(50)
-					. = TRUE
-					message_admins("[key_name_admin(usr)] fast travelled [M]")
-					log_admin("[key_name(usr)] fast travelled [M]")
-					SSblackbox.record_feedback("text", "shuttle_manipulator", 1, "[M.name]")
 					break

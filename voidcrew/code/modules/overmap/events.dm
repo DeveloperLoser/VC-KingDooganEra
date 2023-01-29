@@ -32,14 +32,14 @@
   */
 /obj/structure/overmap/event/proc/apply_effect()
 	if(affect_multiple_times)
-		for(var/obj/structure/overmap/ship/simulated/S in close_overmap_objects)
+		for(var/datum/overmap/ship/controlled/S in close_overmap_objects)
 			if(prob(chance_to_affect))
 				affect_ship(S)
 
 /**
   * The proc called on all ships that are currently being affected.
   */
-/obj/structure/overmap/event/proc/affect_ship(obj/structure/overmap/ship/simulated/S)
+/obj/structure/overmap/event/proc/affect_ship(datum/overmap/ship/controlled/S)
 	return
 
 /obj/structure/overmap/event/Crossed(atom/movable/AM, oldloc)
@@ -63,7 +63,7 @@
 	. = ..()
 	icon_state = "meteor[rand(1, 4)]"
 
-/obj/structure/overmap/event/meteor/affect_ship(obj/structure/overmap/ship/simulated/S)
+/obj/structure/overmap/event/meteor/affect_ship(datum/overmap/ship/controlled/S)
 	var/area/source_area = pick(S.shuttle.shuttle_areas)
 	source_area?.set_fire_alarm_effect()
 	S.recieve_damage(rand(min_damage, max_damage))
@@ -106,7 +106,7 @@
 	. = ..()
 	icon_state = "ion[rand(1, 4)]"
 
-/obj/structure/overmap/event/emp/affect_ship(obj/structure/overmap/ship/simulated/S)
+/obj/structure/overmap/event/emp/affect_ship(datum/overmap/ship/controlled/S)
 	var/area/source_area = pick(S.shuttle.shuttle_areas)
 	source_area.set_fire_alarm_effect()
 	S.recieve_damage(rand(strength * 5, strength * 10))
@@ -145,7 +145,7 @@
 	. = ..()
 	icon_state = "electrical[rand(1, 4)]"
 
-/obj/structure/overmap/event/electric/affect_ship(obj/structure/overmap/ship/simulated/S)
+/obj/structure/overmap/event/electric/affect_ship(datum/overmap/ship/controlled/S)
 	var/area/source_area = pick(S.shuttle.shuttle_areas)
 	source_area.set_fire_alarm_effect()
 	S.recieve_damage(rand(min_damage, max_damage))
@@ -202,7 +202,7 @@
 		else
 			other_wormhole = new(SSovermap.get_unused_overmap_square(), src)
 
-/obj/structure/overmap/event/wormhole/affect_ship(obj/structure/overmap/ship/simulated/S)
+/obj/structure/overmap/event/wormhole/affect_ship(datum/overmap/ship/controlled/S)
 	if(!other_wormhole)
 		qdel(src)
 	if(--stability <= 0)

@@ -247,7 +247,7 @@
 			return "[jobtitle] is already filled to capacity."
 	return "Error: Unknown job availability."
 
-/mob/dead/new_player/proc/IsJobUnavailable(datum/job/job, obj/structure/overmap/ship/simulated/ship, latejoin = FALSE)
+/mob/dead/new_player/proc/IsJobUnavailable(datum/job/job, datum/overmap/ship/controlled/ship, latejoin = FALSE)
 	if(!job)
 		return JOB_UNAVAILABLE_GENERIC
 	if(!(ship?.job_slots[job] > 0))
@@ -264,7 +264,7 @@
 		return JOB_UNAVAILABLE_GENERIC
 	return JOB_AVAILABLE
 
-/mob/dead/new_player/proc/AttemptLateSpawn(datum/job/job, obj/structure/overmap/ship/simulated/ship)
+/mob/dead/new_player/proc/AttemptLateSpawn(datum/job/job, datum/overmap/ship/controlled/ship)
 	. = TRUE
 	if (isnull(ship) || isnull(ship.shuttle))
 		stack_trace("Tried to spawn ([ckey]) into a null ship! Please report this on Github.")
@@ -346,14 +346,14 @@
 	var/balance = usr.client.get_metabalance()
 	var/list/shuttle_choices = list("Purchase ship..." = "Purchase") //Dummy for purchase option
 
-	for(var/obj/structure/overmap/ship/simulated/S as anything in SSovermap.simulated_ships)
+	for(var/datum/overmap/ship/controlled/S as anything in SSovermap.simulated_ships)
 		if(isnull(S.shuttle))
 			continue
 		if((length(S.shuttle.spawn_points) < 1) || !S.join_allowed)
 			continue
 		shuttle_choices["[isnull(S.password) ? "" : "(L) "]" + S.display_name + " ([S.source_template.short_name ? S.source_template.short_name : "Unknown-class"])"] = S //Try to get the class name
 
-	var/obj/structure/overmap/ship/simulated/selected_ship = shuttle_choices[tgui_input_list(src, "Select ship to spawn on.", "Welcome, [client?.prefs.real_name || "User"].", shuttle_choices)]
+	var/datum/overmap/ship/controlled/selected_ship = shuttle_choices[tgui_input_list(src, "Select ship to spawn on.", "Welcome, [client?.prefs.real_name || "User"].", shuttle_choices)]
 	if(!selected_ship)
 		return
 
@@ -369,7 +369,7 @@
 			return LateChoices()
 		if(template.limit)
 			var/count = 0
-			for(var/obj/structure/overmap/ship/simulated/X in SSovermap.simulated_ships)
+			for(var/datum/overmap/ship/controlled/X in SSovermap.simulated_ships)
 				if(X.source_template == template)
 					count++
 					if(template.limit <= count)

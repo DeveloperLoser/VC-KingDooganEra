@@ -280,7 +280,7 @@
 	var/list/hidden_turfs = list()
 
 	///The linked overmap object, if there is one
-	var/obj/structure/overmap/ship/simulated/current_ship
+	var/datum/overmap/ship/controlled/current_ship
 	///List of spawn points on the ship
 	var/list/atom/spawn_points = list()
 

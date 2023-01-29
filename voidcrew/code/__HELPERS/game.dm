@@ -3,9 +3,9 @@
  *
  * Arguments:
  * * mob/living/carbon/human/character - the human character mob you want to notify
- * * obj/structure/overmap/ship/simulated/ship - Simulated ship that contains the ship's prefix
+ * * datum/overmap/ship/controlled/ship - Simulated ship that contains the ship's prefix
  */
-/proc/NotifyFaction(mob/living/carbon/human/character, obj/structure/overmap/ship/simulated/ship)
+/proc/NotifyFaction(mob/living/carbon/human/character, datum/overmap/ship/controlled/ship)
 	switch(ship.source_template.faction_prefix)
 		if("NT-C")
 			to_chat(character, "<h1>Your faction: Nanotrasen Combat Vessel (NT-C)</h1>")
@@ -20,7 +20,7 @@
 		else
 			return
 
-/proc/AnnounceArrival(mob/living/carbon/human/character, rank, obj/structure/overmap/ship/simulated/ship)
+/proc/AnnounceArrival(mob/living/carbon/human/character, rank, datum/overmap/ship/controlled/ship)
 	if(!SSticker.IsRoundInProgress() || QDELETED(character))
 		return
 	var/area/A = get_area(character)

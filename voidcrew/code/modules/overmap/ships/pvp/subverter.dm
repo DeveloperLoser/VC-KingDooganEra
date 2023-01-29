@@ -35,7 +35,7 @@
 	circuit = /obj/item/circuitboard/machine/subverter
 	layer = BELOW_OBJ_LAYER
 	///Which ship the subverter is on
-	var/obj/structure/overmap/ship/simulated/ship
+	var/datum/overmap/ship/controlled/ship
 	///Linked auxiliary console
 	var/obj/machinery/computer/autopilot/aux
 	///Standard machine stuff
@@ -126,10 +126,10 @@
 /**
 *	Returns int used to determine the context of the subversion attempt
 *
-*	obj/structure/overmap/ship/simulated/target_ship - The target ship of the subversion attempt
+*	datum/overmap/ship/controlled/target_ship - The target ship of the subversion attempt
 *	antag - (optional) Not really used but if set to TRUE, will ignore factions. If antag ships are added they will likely use this
 */
-/obj/machinery/subverter/proc/can_subvert(obj/structure/overmap/ship/simulated/target_ship, antag = FALSE)
+/obj/machinery/subverter/proc/can_subvert(datum/overmap/ship/controlled/target_ship, antag = FALSE)
 	if (target_ship.faction_prefix == "NEU")
 		return SUB_TARGET_IS_NEU
 	if (!antag)
@@ -169,9 +169,9 @@
 /**
 *	Cause ship to dock in empty space forcibly
 *
-*	obj/structure/overmap/ship/simulated/target_ship - The ship that will dock
+*	datum/overmap/ship/controlled/target_ship - The ship that will dock
 */
-/obj/machinery/subverter/proc/force_dock(obj/structure/overmap/ship/simulated/target_ship)
+/obj/machinery/subverter/proc/force_dock(datum/overmap/ship/controlled/target_ship)
 	target_ship.decelerate(target_ship.max_speed)
 	target_ship.dock_in_empty_space(usr)
 	COOLDOWN_START(target_ship, engine_cooldown, sub_engine)
@@ -181,9 +181,9 @@
 /**
 *	Begin the actual subversion attempt
 *
-*	obj/structure/overmap/ship/simulated/target_ship - Target ship of the attempt
+*	datum/overmap/ship/controlled/target_ship - Target ship of the attempt
 */
-/obj/machinery/subverter/proc/attempt_to_subvert(obj/structure/overmap/ship/simulated/target_ship)
+/obj/machinery/subverter/proc/attempt_to_subvert(datum/overmap/ship/controlled/target_ship)
 	. = FALSE
 	var/can_sub_flag = can_subvert(target_ship)
 	bark_processing(can_sub_flag)
@@ -200,7 +200,7 @@
 					continue
 				LAZYOR(ship.close_overmap_objects, add)
 			LAZYREMOVE(ship.close_overmap_objects, target_ship) //prevent confusion, since you wanna dock in the empty space
-		addtimer(CALLBACK(target_ship, /obj/structure/overmap/ship/simulated/.proc/systems_restored), COOLDOWN_TIMELEFT(target_ship, engine_cooldown))
+		addtimer(CALLBACK(target_ship, /datum/overmap/ship/controlled/.proc/systems_restored), COOLDOWN_TIMELEFT(target_ship, engine_cooldown))
 		return TRUE
 	else
 		target_ship.most_recent_helm.say("Viral agent blocked. Source: [ship.name]")
@@ -248,9 +248,9 @@
 		subvert_bark("NEU Vessels cannot use the subverter!")
 		return
 	//find nearest non-allied pvp ship and attempt to subvert
-	var/obj/structure/overmap/ship/simulated/nearest
+	var/datum/overmap/ship/controlled/nearest
 	var/ship_min_dist
-	for (var/obj/structure/overmap/ship/simulated/ship_in_view in view(ship.sensor_range, get_turf(ship)))
+	for (var/datum/overmap/ship/controlled/ship_in_view in view(ship.sensor_range, get_turf(ship)))
 		var/can_sub_flag = can_subvert(ship_in_view)
 		if (ship_in_view == ship || !considered_valid_target(can_sub_flag))
 			continue

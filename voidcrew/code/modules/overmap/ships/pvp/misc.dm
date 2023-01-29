@@ -9,7 +9,7 @@
 	///How long you are immune to being subverted
 	COOLDOWN_DECLARE(sub_grace)
 	///Ship that is requesting to dock with you
-	var/obj/structure/overmap/ship/simulated/requesting_ship
+	var/datum/overmap/ship/controlled/requesting_ship
 	///prevent spamming
 	COOLDOWN_DECLARE(request_cooldown)
 	///prevent someone from sending docking requests to multiple ships and probably breaking the game
@@ -32,7 +32,7 @@
 /**
 *	Try to block a sub attempt. If successful, use up an antivirus node and return TRUE
 */
-/obj/structure/overmap/ship/simulated/proc/run_antivirus()
+/datum/overmap/ship/controlled/proc/run_antivirus()
 	. = FALSE
 	if (antivirus_nodes > 0)
 		antivirus_nodes--
@@ -41,7 +41,7 @@
 /**
 *	You just survived a subversion, start the grace period and make the helm say something
 */
-/obj/structure/overmap/ship/simulated/proc/systems_restored()
+/datum/overmap/ship/controlled/proc/systems_restored()
 	COOLDOWN_START(src, sub_grace, SHIP_GRACE_TIME)
 	most_recent_helm.say("Helm controls restored!")
 
@@ -62,9 +62,9 @@
 *	Used for request docking
 *
 *	mob/user - player who initiated the dock
-*	obj/structure/overmap/ship/simulated/acting - ship that asked to dock
+*	datum/overmap/ship/controlled/acting - ship that asked to dock
 */
-/obj/structure/overmap/ship/simulated/proc/duo_dock(mob/user, obj/structure/overmap/ship/simulated/acting)
+/datum/overmap/ship/controlled/proc/duo_dock(mob/user, datum/overmap/ship/controlled/acting)
 	var/obj/structure/overmap/dynamic/empty/E
 	E = locate() in get_turf(src)
 	if(!E)
@@ -79,9 +79,9 @@
 *	that will allow them to both dock in an empty space at the same time
 *
 *	mob/user - player who made the request
-*	obj/structure/overmap/ship/simulated/acting - the requesting ship
+*	datum/overmap/ship/controlled/acting - the requesting ship
 */
-/obj/structure/overmap/ship/simulated/ship_act(mob/user, obj/structure/overmap/ship/simulated/acting)
+/datum/overmap/ship/controlled/ship_act(mob/user, datum/overmap/ship/controlled/acting)
 	if (acting.sent_request)
 		acting.most_recent_helm.say("Request already sent.")
 		return

@@ -175,7 +175,7 @@
   * The action performed by a ship on this when the helm button is pressed. Returns nothing on success, an error string if one occurs.
   * * acting - The ship acting on the event
   */
-/obj/structure/overmap/proc/ship_act(mob/user, obj/structure/overmap/ship/simulated/acting)
+/obj/structure/overmap/proc/ship_act(mob/user, datum/overmap/ship/controlled/acting)
 	to_chat(user, "<span class='notice'>You don't think there's anything you can do here.</span>")
 
 /obj/structure/overmap/star

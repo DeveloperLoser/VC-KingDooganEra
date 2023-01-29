@@ -64,7 +64,7 @@ SUBSYSTEM_DEF(overmap)
   */
 /datum/controller/subsystem/overmap/proc/setup_shuttle_ship(obj/docking_port/mobile/shuttle, datum/map_template/shuttle/source_template)
 	var/docked_object = get_overmap_object_by_location(shuttle)
-	var/obj/structure/overmap/ship/simulated/new_ship
+	var/datum/overmap/ship/controlled/new_ship
 	if(docked_object)
 		new_ship = new(docked_object, shuttle, source_template)
 		new_ship.state = OVERMAP_SHIP_IDLE
