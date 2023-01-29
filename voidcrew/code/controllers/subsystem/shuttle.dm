@@ -90,7 +90,7 @@
 				transit_requesters += requester
 			else
 				var/obj/docking_port/mobile/M = requester
-				M.transit_failure()
+				message_admins("Shuttle [M] repeatedly failed to create transit zone.")
 		if(MC_TICK_CHECK)
 			break
 
@@ -105,10 +105,10 @@
   * * loading_template - The shuttle map template to load. Can NOT be null.
   * * destination_port - The port the newly loaded shuttle will be sent to after being fully spawned in. If you want to have a transit dock be created, use [proc/load_template] instead. Should NOT be null.
   **/
-/datum/controller/subsystem/shuttle/action_load(datum/map_template/shuttle/loading_template, obj/docking_port/stationary/destination_port)
+/datum/controller/subsystem/shuttle/action_load(datum/map_template/shuttle/loading_template, datum/overmap/ship/controlled/parent, obj/docking_port/stationary/destination_port)
 	if(!destination_port)
 		CRASH("No destination port specified for shuttle load, aborting.")
-	var/obj/docking_port/mobile/new_shuttle = load_template(loading_template, FALSE)
+	var/obj/docking_port/mobile/new_shuttle = load_template(loading_template, parent, FALSE)
 	var/result = new_shuttle.canDock(destination_port)
 	if((result != SHUTTLE_CAN_DOCK))
 		WARNING("Template shuttle [new_shuttle] cannot dock at [destination_port] ([result]).")
@@ -126,10 +126,10 @@
   * * to_replace - The shuttle to replace. Should NOT be null.
   * * replacement - The shuttle map template to load in place of the old shuttle. Can NOT be null.
   **/
-/datum/controller/subsystem/shuttle/replace_shuttle(obj/docking_port/mobile/to_replace, datum/map_template/shuttle/replacement)
+/datum/controller/subsystem/shuttle/proc/replace_shuttle(obj/docking_port/mobile/to_replace, datum/overmap/ship/controlled/parent, datum/map_template/shuttle/replacement
 	if(!to_replace || !replacement)
 		return
-	var/obj/docking_port/mobile/new_shuttle = load_template(replacement, FALSE)
+var/obj/docking_port/mobile/new_shuttle = load_template(replacement, parent, FALSE)
 	var/obj/docking_port/stationary/old_shuttle_location = to_replace.get_docked()
 	var/result = new_shuttle.canDock(old_shuttle_location)
 
@@ -140,8 +140,8 @@
 
 	new_shuttle.timer = to_replace.timer //Copy some vars from the old shuttle
 	new_shuttle.mode = to_replace.mode
-	new_shuttle.current_ship.set_ship_name(to_replace.name)
-	new_shuttle.current_ship.forceMove(to_replace.current_ship.loc) //Overmap location
+new_shuttle.current_ship.Rename(to_replace.name, TRUE)
+	new_shuttle.current_ship.Move(to_replace.current_ship.x, to_replace.current_ship.y) //Overmap location
 
 	if(istype(old_shuttle_location, /obj/docking_port/stationary/transit))
 		to_replace.assigned_transit = null
@@ -158,7 +158,7 @@
   * * template - The shuttle map template to load. Can NOT be null.
   * * spawn_transit - Whether or not to send the new shuttle to a newly-generated transit dock after loading.
   **/
-/datum/controller/subsystem/shuttle/load_template(datum/map_template/shuttle/template, spawn_transit = TRUE)
+/datum/controller/subsystem/shuttle/proc/load_template(datum/map_template/shuttle/template, datum/overmap/ship/controlled/parent, spawn_transit = TRUE)
 	. = FALSE
 	var/loading_mapzone = SSmapping.create_map_zone("Shuttle Loading Zone")
 	var/datum/virtual_level/loading_zone = SSmapping.create_virtual_level("[template.name] Loading Level", list(ZTRAIT_RESERVED = TRUE), loading_mapzone, template.width, template.height, ALLOCATION_FREE)
@@ -172,8 +172,8 @@
 
 	var/affected = template.get_affected_turfs(BL, centered=FALSE)
 
-	var/found = 0
 	var/obj/docking_port/mobile/new_shuttle
+	var/list/stationary_ports = list()
 	// Search the turfs for docking ports
 	// - We need to find the mobile docking port because that is the heart of
 	//   the shuttle.

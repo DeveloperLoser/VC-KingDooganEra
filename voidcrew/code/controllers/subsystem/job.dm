@@ -1,6 +1,6 @@
 /datum/controller/subsystem/job/proc/get_manifest()
 	var/list/manifest_out = list()
-	for(var/obj/structure/overmap/ship/simulated/ship as anything in SSovermap.simulated_ships)
+	for(var/datum/overmap/ship/controlled/ship as anything in SSovermap.controlled_ships)
 		if(!length(ship.manifest))
 			continue
 		manifest_out["[ship.name] ([ship.source_template.short_name])"] = list()

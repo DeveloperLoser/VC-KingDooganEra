@@ -52,3 +52,6 @@
 #define RUIN_TYPE_SPACE "space"
 #define RUIN_TYPE_BEACH "beach"
 #define RUIN_TYPE_WASTELAND "wasteland"
+
+//Where on Centcomm Z the overmap is placed
+#define OVERMAP_TOKEN_TURF(x_pos, y_pos) locate(SSovermap.overmap_vlevel.low_x + SSovermap.overmap_vlevel.reserved_margin + x_pos - 1, SSovermap.overmap_vlevel.low_y + SSovermap.overmap_vlevel.reserved_margin + y_pos - 1, SSovermap.overmap_vlevel.z_value)

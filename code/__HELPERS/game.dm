@@ -517,8 +517,7 @@ block( \
 
 	return A.loc
 
-/* We do a custom version of this for ship spawning
-/proc/AnnounceArrival(mob/living/carbon/human/character, rank, obj/structure/overmap/ship/simulated/ship)
+/proc/AnnounceArrival(mob/living/carbon/human/character, rank, datum/overmap/ship/controlled/ship)
 	if(!SSticker.IsRoundInProgress() || QDELETED(character))
 		return
 	var/area/A = get_area(character)
@@ -527,7 +526,6 @@ block( \
 		return
 	if((character.mind.assigned_role == "Cyborg") || (character.mind.assigned_role == character.mind.special_role))
 		return
-*/
 
 /proc/lavaland_equipment_pressure_check(turf/T)
 	. = FALSE
